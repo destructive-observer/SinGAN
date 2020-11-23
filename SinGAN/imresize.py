@@ -66,7 +66,8 @@ def imresize_to_shape(im,output_shape,opt):
 def imresize_in(im, scale_factor=None, output_shape=None, kernel=None, antialiasing=True, kernel_shift_flag=False):
     # First standardize values and fill missing arguments (if needed) by deriving scale from output shape or vice versa
     scale_factor, output_shape = fix_scale_and_size(im.shape, output_shape, scale_factor)
-
+    #print('imresize_in is scale_factor {}'.format(scale_factor))
+    #print('imresize_in is kernel {}'.format(kernel))
     # For a given numeric kernel case, just do convolution and sub-sampling (downscaling only)
     if type(kernel) == np.ndarray and scale_factor[0] <= 1:
         return numeric_kernel(im, kernel, scale_factor, output_shape, kernel_shift_flag)
@@ -80,13 +81,14 @@ def imresize_in(im, scale_factor=None, output_shape=None, kernel=None, antialias
         "linear": (linear, 2.0),
         None: (cubic, 4.0)  # set default interpolation method as cubic
     }.get(kernel)
-
+    #print('imresize_in is method {}'.format(method))
+    #print('imresize_in is kernel_width {}'.format(kernel_width))
     # Antialiasing is only used when downscaling
     antialiasing *= (scale_factor[0] < 1)
 
     # Sort indices of dimensions according to scale of each dimension. since we are going dim by dim this is efficient
     sorted_dims = np.argsort(np.array(scale_factor)).tolist()
-
+    #print('imresize_in is sorted_dims {}'.format(sorted_dims))
     # Iterate over dimensions to calculate local weights for resizing and resize each time in one direction
     out_im = np.copy(im)
     for dim in sorted_dims:
@@ -98,7 +100,8 @@ def imresize_in(im, scale_factor=None, output_shape=None, kernel=None, antialias
         # weights that multiply the values there to get its result.
         weights, field_of_view = contributions(im.shape[dim], output_shape[dim], scale_factor[dim],
                                                method, kernel_width, antialiasing)
-
+        #print('imresize_in is weights {}'.format(weights))
+        #print('imresize_in is field_of_view {}'.format(field_of_view))
         # Use the affecting position values and the set of weights to calculate the result of resizing along this 1 dim
         out_im = resize_along_dim(out_im, dim, weights, field_of_view)
 

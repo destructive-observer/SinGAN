@@ -148,7 +148,9 @@ def calc_gradient_penalty(netD, real_data, fake_data, LAMBDA, device):
 
 def read_image(opt):
     x = img.imread('%s/%s' % (opt.input_dir,opt.input_name))
+    print('read_image is x {}'.format(x))
     x = np2torch(x,opt)
+    print('read_image np2torch is x {}'.format(x))
     x = x[:,0:3,:,:]
     return x
 
@@ -208,8 +210,11 @@ def adjust_scales2image(real_,opt):
 def adjust_scales2image_SR(real_,opt):
     opt.min_size = 18
     opt.num_scales = int((math.log(opt.min_size / min(real_.shape[2], real_.shape[3]), opt.scale_factor_init))) + 1
+    print('opt.num_scales value is {}'.format(opt.num_scales))
     scale2stop = int(math.log(min(opt.max_size , max(real_.shape[2], real_.shape[3])) / max(real_.shape[0], real_.shape[3]), opt.scale_factor_init))
+    print('scale2stop value is {}'.format(scale2stop))
     opt.stop_scale = opt.num_scales - scale2stop
+    print('opt.stop_scale value is {}'.format(opt.stop_scale))
     opt.scale1 = min(opt.max_size / max([real_.shape[2], real_.shape[3]]), 1)  # min(250/max([real_.shape[0],real_.shape[1]]),1)
     real = imresize(real_, opt.scale1, opt)
     #opt.scale_factor = math.pow(opt.min_size / (real.shape[2]), 1 / (opt.stop_scale))

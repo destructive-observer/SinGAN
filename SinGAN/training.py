@@ -17,9 +17,14 @@ def train(opt,Gs,Zs,reals,NoiseAmp):
     nfc_prev = 0
 
     while scale_num<opt.stop_scale+1:
+        #print('real_ value is {}'.format(real_))
+        #print('reals value is {}'.format(reals))
+        print('scale_num value is {}'.format(scale_num))
+        print('stop_scale value is {}'.format(opt.stop_scale))
         opt.nfc = min(opt.nfc_init * pow(2, math.floor(scale_num / 4)), 128)
         opt.min_nfc = min(opt.min_nfc_init * pow(2, math.floor(scale_num / 4)), 128)
-
+        print('opt.nfc value is {}'.format(opt.nfc))
+        print('opt.min_nfc value is {}'.format(opt.min_nfc))
         opt.out_ = functions.generate_dir2save(opt)
         opt.outf = '%s/%d' % (opt.out_,scale_num)
         try:
@@ -44,7 +49,7 @@ def train(opt,Gs,Zs,reals,NoiseAmp):
         D_curr.eval()
 
         Gs.append(G_curr)
-        Zs.append(z_curr)
+        Zs.append(z_curr)#ZS噪声图
         NoiseAmp.append(opt.noise_amp)
 
         torch.save(Zs, '%s/Zs.pth' % (opt.out_))
@@ -93,6 +98,7 @@ def train_single_scale(netD,netG,reals,Gs,Zs,in_s,NoiseAmp,opt,centers=None):
     z_opt2plot = []
 
     for epoch in range(opt.niter):
+        
         if (Gs == []) & (opt.mode != 'SR_train'):
             z_opt = functions.generate_noise([1,opt.nzx,opt.nzy], device=opt.device)
             z_opt = m_noise(z_opt.expand(1,3,opt.nzx,opt.nzy))
@@ -198,10 +204,14 @@ def train_single_scale(netD,netG,reals,Gs,Zs,in_s,NoiseAmp,opt,centers=None):
 
         if epoch % 25 == 0 or epoch == (opt.niter-1):
             print('scale %d:[%d/%d]' % (len(Gs), epoch, opt.niter))
+               
 
         if epoch % 500 == 0 or epoch == (opt.niter-1):
             plt.imsave('%s/fake_sample.png' %  (opt.outf), functions.convert_image_np(fake.detach()), vmin=0, vmax=1)
             plt.imsave('%s/G(z_opt).png'    % (opt.outf),  functions.convert_image_np(netG(Z_opt.detach(), z_prev).detach()), vmin=0, vmax=1)
+            #print('Gs value is {}'.format(Gs))
+            #print('len(Gs) value is {}'.format(len(Gs)))
+            print('Zs value is {}'.format(Zs))    
             #plt.imsave('%s/D_fake.png'   % (opt.outf), functions.convert_image_np(D_fake_map))
             #plt.imsave('%s/D_real.png'   % (opt.outf), functions.convert_image_np(D_real_map))
             #plt.imsave('%s/z_opt.png'    % (opt.outf), functions.convert_image_np(z_opt.detach()), vmin=0, vmax=1)
