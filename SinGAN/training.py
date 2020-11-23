@@ -9,22 +9,24 @@ import matplotlib.pyplot as plt
 from SinGAN.imresize import imresize
 
 def train(opt,Gs,Zs,reals,NoiseAmp):
-    real_ = functions.read_image(opt)
+    real_ = functions.read_image(opt)#将输入的png图像转变为行 列 通道 像素这样的tensor之后，作归一化，值都在[-1,1]之间
+    #通过norm的操作和clamp函数的功能
+    #print(real_)
     in_s = 0
     scale_num = 0
-    real = imresize(real_,opt.scale1,opt)
-    reals = functions.creat_reals_pyramid(real,reals,opt)
+    real = imresize(real_,opt.scale1,opt)#开始对图像作变形
+    reals = functions.creat_reals_pyramid(real,reals,opt)#这个金字塔开始对图像的通道数作变化，以适应不同特征塔
     nfc_prev = 0
 
     while scale_num<opt.stop_scale+1:
         #print('real_ value is {}'.format(real_))
         #print('reals value is {}'.format(reals))
-        print('scale_num value is {}'.format(scale_num))
-        print('stop_scale value is {}'.format(opt.stop_scale))
+        #print('scale_num value is {}'.format(scale_num))
+        #print('stop_scale value is {}'.format(opt.stop_scale))
         opt.nfc = min(opt.nfc_init * pow(2, math.floor(scale_num / 4)), 128)
         opt.min_nfc = min(opt.min_nfc_init * pow(2, math.floor(scale_num / 4)), 128)
-        print('opt.nfc value is {}'.format(opt.nfc))
-        print('opt.min_nfc value is {}'.format(opt.min_nfc))
+        #print('opt.nfc value is {}'.format(opt.nfc))
+        #print('opt.min_nfc value is {}'.format(opt.min_nfc))
         opt.out_ = functions.generate_dir2save(opt)
         opt.outf = '%s/%d' % (opt.out_,scale_num)
         try:

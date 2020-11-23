@@ -48,16 +48,18 @@ def torch2uint8(x):
 
 def imresize(im,scale,opt):
     #s = im.shape
-    im = torch2uint8(im)
+    im = torch2uint8(im)#im又变成了行 列 通道的形状,变来变去是为了适应不同接口对形状的要求
+    print('im.shape value before is {}'.format(im.shape))
     im = imresize_in(im, scale_factor=scale)
+    print('im.shape value after is {}'.format(im.shape))
     im = np2torch(im,opt)
     #im = im[:, :, 0:int(scale * s[2]), 0:int(scale * s[3])]
     return im
 
 def imresize_to_shape(im,output_shape,opt):
     #s = im.shape
-    im = torch2uint8(im)
-    im = imresize_in(im, output_shape=output_shape)
+    im = torch2uint8(im)  
+    im = imresize_in(im, output_shape=output_shape) 
     im = np2torch(im,opt)
     #im = im[:, :, 0:int(scale * s[2]), 0:int(scale * s[3])]
     return im

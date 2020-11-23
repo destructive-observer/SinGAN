@@ -148,9 +148,9 @@ def calc_gradient_penalty(netD, real_data, fake_data, LAMBDA, device):
 
 def read_image(opt):
     x = img.imread('%s/%s' % (opt.input_dir,opt.input_name))
-    print('read_image is x {}'.format(x))
+    #print('read_image is x {}'.format(x))
     x = np2torch(x,opt)
-    print('read_image np2torch is x {}'.format(x))
+    #print('read_image np2torch is x {}'.format(x))
     x = x[:,0:3,:,:]
     return x
 
@@ -169,11 +169,13 @@ def np2torch(x,opt):
         x = x[:,:,None,None]
         x = x.transpose(3, 2, 0, 1)
     x = torch.from_numpy(x)
+    #print('x from_numpy value is {}'.format(x))
     if not(opt.not_cuda):
         x = move_to_gpu(x)
     x = x.type(torch.cuda.FloatTensor) if not(opt.not_cuda) else x.type(torch.FloatTensor)
     #x = x.type(torch.FloatTensor)
     x = norm(x)
+    #print('x after norm value is {}'.format(x))
     return x
 
 def torch2uint8(x):
